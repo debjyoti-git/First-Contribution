@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FILE UPLOAD</title>
+  </head>
+
+  <body>
+    <h1>File Upload</h1>
+
+    <form id="myForm">
+      <input type="file" name="f_file" id="f_file" />
+      <input type="submit" value="submit" onclick="submit_form(event)" />
+      <br />
+      <hr />
+      <div id="apitext" style="display: none">
+        Saving data to database is done by worker threads ............<br />
+        Main thread is independent of executing other pieces of code
+      </div>
+    </form>
+  </body>
+</html>
+<script>
+  var submit_form = (e) => {
+    const z = document.getElementById("apitext");
+    z.style.display = "block";
+    var http = new XMLHttpRequest();
+    var url = "/api/file_upload";
+    var formData = new FormData();
+    var file_value = document.getElementById("f_file").files[0];
+    formData.append("f_file", file_value);
+    http.open("POST", url, true);
+    http.onreadystatechange = function () {
+      if (http.readyState == 4 && http.status == 200) {
+        z.style.display = "none";
+        window.open("/api/search/", "_self");
+      }
+    };
+    http.send(formData);
+    e.preventDefault();
+  };
+</script>

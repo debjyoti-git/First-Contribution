@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Find Policy Details</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+      integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+  </head>
+
+  <body>
+    <h1>Find Policy Details</h1>
+
+    <form id="myForm">
+      <input type="text" name="username" id="username" />
+      <input type="submit" onclick="submit_form(event)" />
+    </form>
+    <br />
+    <div class="panel-body" id="rep_bod" style="display: block">
+      <div style="overflow-y: auto">
+        <table data-toggle="table" id="report_tbl"></table>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  var submit_form = (e) => {
+    var http = new XMLHttpRequest();
+    var url = "/api/userdata/";
+    var username = document.getElementById("username").value;
+    var params = "username=" + username;
+    http.open("POST", url, true);
+    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    http.onreadystatechange = function () {
+      if (http.readyState == 4 && http.status == 200) {
+        var jsonArr = JSON.parse(http.responseText);
+        var html = ``;
+        if (jsonArr.length > 0) {
+          html += `<tr>`;
+          html += `<th>Name</th>`;
+          html += `<th>Phone</th>`;
+          html += `<th>Sex</th>`;
+          html += `<th>Address</th>`;
+          html += `<th>State</th>`;
+          html += `<th>City</th>`;
+          html += `<th>Email</th>`;
+          html += `<th>Zip</th>`;
+          html += `<th>Dob</th>`;
+          html += `<th>Agent Name</th>`;
+          html += `<th>Policy Number</th>`;
+          html += `<th>Premium amount</th>`;
+          html += `<th>Policy Type</th>`;
+          html += `<th>Policy Startdate</th>`;
+          html += `<th>Policy Enddate</th>`;
+          html += `<th>Company Name</th>`;
+          html += `<th>Category Name</th>`;
+          html += `</tr>`;
+          var acc_name = "";
+          for (let i = 0; i < jsonArr.length; i++) {
+            if (jsonArr[i].account_name !== acc_name) {
+              acc_name = jsonArr[i].account_name;
+              html +=
+                `<tr><td colspan=7><b><u>Account Name - ` +
+                acc_name +
+                `</u></b></td></tr>`;
+            }
+
+            html += `<tr>`;
+            html += `<td>` + jsonArr[i].user_details.name + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.phone + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.gender + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.address + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.state + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.city + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.email + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.zip + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.dob + `</td>`;
+            html += `<td>` + jsonArr[i].user_details.agent_name.name + `</td>`;
+            html += `<td>` + jsonArr[i].policy_details.policy_number + `</td>`;
+            html += `<td>` + jsonArr[i].policy_details.premium_amount + `</td>`;
+            html += `<td>` + jsonArr[i].policy_details.policy_type + `</td>`;
+            html +=
+              `<td>` + jsonArr[i].policy_details.policy_startdate + `</td>`;
+            html += `<td>` + jsonArr[i].policy_details.policy_enddate + `</td>`;
+            html +=
+              `<td>` +
+              jsonArr[i].policy_details.company_details.company_name +
+              `</td>`;
+            html +=
+              `<td>` +
+              jsonArr[i].policy_details.company_details.category_details
+                .category_name +
+              `</td>`;
+            html += `</tr>`;
+          }
+        } else {
+          html += `<tbody><tr class="no-records-found"><td colspan="0">No matching records found</td></tr></tbody>`;
+        }
+        var element = document.getElementById("report_tbl");
+        element.innerHTML = html;
+        document.getElementById("username").value = "";
+      }
+    };
+    http.send(params);
+    e.preventDefault();
+  };
+</script>
